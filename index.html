@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="is">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Glacier Law – Security Agent System</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=DM+Mono:wght@300;400;500&family=Neue+Haas+Grotesk+Display+Pro:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ice: #e8f0f5;
+  --glacier: #c5d8e8;
+  --deep: #0d1f2d;
+  --navy: #142233;
+  --steel: #2a4a63;
+  --frost: #f4f8fb;
+  --gold: #b8964a;
+  --gold-light: #d4ad6a;
+  --muted: #7a96aa;
+  --danger: #c0392b;
+  --success: #1a7a4a;
+  --warning: #b8760a;
+  --border: rgba(197,216,232,0.3);
+  --card: rgba(20,34,51,0.95);
+  --text: #e8f0f5;
+  --text-muted: #8aabbf;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'DM Mono', monospace;
+  background: var(--deep);
+  color: var(--text);
+  min-height: 100vh;
+  background-image: 
+    radial-gradient(ellipse at 20% 0%, rgba(37,80,120,0.4) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 100%, rgba(13,31,45,0.8) 0%, transparent 60%);
+}
+/* HEADER */
+.header {
+  border-bottom: 1px solid var(--border);
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  background: rgba(13,31,45,0.9);
+  backdrop-filter: blur(12px);
+  position: sticky; top: 0; z-index: 100;
+}
+.logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.4rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--ice);
+}
+.logo span { color: var(--gold); }
+.header-right { display: flex; gap: 1rem; align-items: center; }
+.badge-role {
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold);
+  border: 1px solid var(--gold);
+  padding: 3px 10px;
+  border-radius: 2px;
+}
+/* LAYOUT */
+.layout { display: flex; height: calc(100vh - 64px); }
+.sidebar {
+  width: 260px; min-width: 260px;
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  background: rgba(13,25,40,0.7);
+  overflow-y: auto;
+}
+.main { flex: 1; overflow-y: auto; padding: 2rem; }
+/* SIDEBAR */
+.sidebar-section { padding: 1rem 1.2rem 0.5rem; }
+.sidebar-label {
+  font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 0.5rem;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 0.6rem;
+  padding: 0.55rem 0.8rem; border-radius: 4px; cursor: pointer;
+  font-size: 0.78rem; color: var(--text-muted); transition: all 0.15s;
+  margin-bottom: 2px;
+}
+.nav-item:hover { background: rgba(197,216,232,0.08); color: var(--ice); }
+.nav-item.active { background: rgba(184,150,74,0.15); color: var(--gold); }
+.nav-item svg { width: 14px; height: 14px; flex-shrink: 0; }
+.client-list { padding: 0.5rem; }
+.client-item {
+  padding: 0.6rem 0.8rem; border-radius: 4px; cursor: pointer;
+  font-size: 0.75rem; color: var(--text-muted); transition: all 0.15s;
+  border: 1px solid transparent; margin-bottom: 2px;
+}
+.client-item:hover { border-color: var(--border); color: var(--ice); }
+.client-item.active { border-color: rgba(184,150,74,0.4); background: rgba(184,150,74,0.08); color: var(--gold-light); }
+.client-name { font-weight: 500; }
+.client-sub { font-size: 0.65rem; color: var(--muted); margin-top: 2px; }
+/* BUTTONS */
+.btn {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  padding: 0.5rem 1rem; border-radius: 3px; cursor: pointer;
+  font-family: 'DM Mono', monospace; font-size: 0.75rem;
+  border: none; transition: all 0.15s; letter-spacing: 0.03em;
+}
+.btn-primary { background: var(--gold); color: var(--deep); font-weight: 500; }
+.btn-primary:hover { background: var(--gold-light); }
+.btn-ghost { background: transparent; color: var(--text-muted); border: 1px solid var(--border); }
+.btn-ghost:hover { border-color: var(--glacier); color: var(--ice); }
+.btn-danger { background: rgba(192,57,43,0.15); color: #e74c3c; border: 1px solid rgba(192,57,43,0.3); }
+.btn-sm { padding: 0.3rem 0.7rem; font-size: 0.7rem; }
+/* CARDS */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.card-header {
+  padding: 1rem 1.4rem;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.card-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1rem; font-weight: 500;
+  letter-spacing: 0.03em;
+}
+.card-body { padding: 1.4rem; }
+/* GRID */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+/* STAT BOXES */
+.stat-box {
+  background: rgba(20,34,51,0.8);
+  border: 1px solid var(--border); border-radius: 4px;
+  padding: 1rem 1.2rem;
+}
+.stat-label { font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.stat-value { font-family: 'Cormorant Garamond', serif; font-size: 2rem; color: var(--ice); margin-top: 0.2rem; }
+.stat-value.gold { color: var(--gold); }
+/* TABLE */
+table { width: 100%; border-collapse: collapse; font-size: 0.76rem; }
+th {
+  text-align: left; padding: 0.6rem 0.8rem;
+  font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--muted); border-bottom: 1px solid var(--border);
+  font-weight: 400;
+}
+td { padding: 0.7rem 0.8rem; border-bottom: 1px solid rgba(197,216,232,0.1); vertical-align: middle; }
+tr:hover td { background: rgba(197,216,232,0.03); }
+tr:last-child td { border-bottom: none; }
+/* BADGES */
+.badge {
+  display: inline-flex; align-items: center;
+  padding: 2px 8px; border-radius: 2px; font-size: 0.65rem; letter-spacing: 0.08em;
+}
+.badge-green { background: rgba(26,122,74,0.2); color: #2ecc71; border: 1px solid rgba(26,122,74,0.4); }
+.badge-red { background: rgba(192,57,43,0.2); color: #e74c3c; border: 1px solid rgba(192,57,43,0.4); }
+.badge-yellow { background: rgba(184,118,10,0.2); color: #f39c12; border: 1px solid rgba(184,118,10,0.4); }
+.badge-blue { background: rgba(37,80,120,0.3); color: var(--glacier); border: 1px solid rgba(197,216,232,0.3); }
+.badge-gold { background: rgba(184,150,74,0.15); color: var(--gold); border: 1px solid rgba(184,150,74,0.3); }
+/* FORM */
+.form-group { margin-bottom: 1rem; }
+.form-label { font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.4rem; display: block; }
+.form-control {
+  width: 100%; background: rgba(13,31,45,0.8);
+  border: 1px solid var(--border); border-radius: 3px;
+  padding: 0.55rem 0.8rem; font-family: 'DM Mono', monospace;
+  font-size: 0.78rem; color: var(--ice);
+  transition: border-color 0.15s;
+}
+.form-control:focus { outline: none; border-color: var(--gold); }
+.form-control option { background: var(--navy); }
+select.form-control { cursor: pointer; }
+/* TABS */
+.tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 1.5rem; }
+.tab {
+  padding: 0.7rem 1.2rem; cursor: pointer; font-size: 0.75rem;
+  color: var(--muted); border-bottom: 2px solid transparent;
+  transition: all 0.15s; letter-spacing: 0.05em;
+}
+.tab:hover { color: var(--ice); }
+.tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+/* PAGE HEADER */
+.page-header { margin-bottom: 1.5rem; display: flex; align-items: flex-start; justify-content: space-between; }
+.page-title { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 400; }
+.page-subtitle { font-size: 0.72rem; color: var(--muted); margin-top: 0.3rem; }
+/* MODAL */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000; backdrop-filter: blur(4px);
+  opacity: 0; pointer-events: none; transition: opacity 0.2s;
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal {
+  background: var(--navy); border: 1px solid var(--border);
+  border-radius: 8px; width: 560px; max-width: 95vw;
+  max-height: 85vh; overflow-y: auto;
+  transform: translateY(10px); transition: transform 0.2s;
+}
+.modal-overlay.open .modal { transform: translateY(0); }
+.modal-header {
+  padding: 1.2rem 1.4rem;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.modal-title { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; }
+.modal-close { cursor: pointer; color: var(--muted); font-size: 1.2rem; background: none; border: none; color: var(--muted); }
+.modal-body { padding: 1.4rem; }
+.modal-footer { padding: 1rem 1.4rem; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 0.5rem; }
+/* CHECKBOX */
+.check-row { display: flex; align-items: center; gap: 0.5rem; font-size: 0.78rem; cursor: pointer; }
+.check-row input[type=checkbox] { accent-color: var(--gold); width: 14px; height: 14px; }
+/* TOAST */
+.toast-container { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 9999; display: flex; flex-direction: column; gap: 0.5rem; }
+.toast {
+  background: var(--navy); border: 1px solid var(--border);
+  border-radius: 4px; padding: 0.8rem 1.2rem;
+  font-size: 0.75rem; color: var(--ice);
+  animation: slideIn 0.2s ease; min-width: 240px;
+}
+.toast.success { border-left: 3px solid #2ecc71; }
+.toast.error { border-left: 3px solid #e74c3c; }
+@keyframes slideIn { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+/* REMINDER / TASK items */
+.task-item {
+  display: flex; align-items: flex-start; gap: 0.8rem;
+  padding: 0.8rem; border-radius: 4px;
+  border: 1px solid var(--border); margin-bottom: 0.5rem;
+  background: rgba(20,34,51,0.5);
+}
+.task-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+.task-dot.reminder { background: var(--gold); }
+.task-dot.task { background: #3498db; }
+.task-dot.done { background: #2ecc71; }
+.task-text { flex: 1; }
+.task-name { font-size: 0.78rem; }
+.task-meta { font-size: 0.65rem; color: var(--muted); margin-top: 2px; }
+/* SECTION DIVIDER */
+.section-divider {
+  font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--muted); margin: 1.5rem 0 0.8rem;
+  display: flex; align-items: center; gap: 0.8rem;
+}
+.section-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+/* LOADING */
+.loading { text-align: center; padding: 3rem; color: var(--muted); font-size: 0.8rem; }
+/* DOC TYPE TAG */
+.doc-type {
+  display: inline-block; font-size: 0.62rem; padding: 1px 6px;
+  border-radius: 2px; background: rgba(37,80,120,0.3);
+  color: var(--glacier); letter-spacing: 0.05em;
+  border: 1px solid rgba(197,216,232,0.2);
+}
+/* FEE ITEMS */
+.fee-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.7rem 0; border-bottom: 1px solid var(--border);
+  font-size: 0.78rem;
+}
+.fee-item:last-child { border-bottom: none; }
+/* AMOUNT */
+.amount { font-family: 'DM Mono', monospace; }
+/* Empty state */
+.empty-state { text-align: center; padding: 2.5rem; color: var(--muted); font-size: 0.78rem; }
+.empty-state .icon { font-size: 2rem; margin-bottom: 0.5rem; opacity: 0.4; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--steel); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo">Glacier <span>Law</span></div>
+  <div class="header-right"><span id="syncStatus" style="font-size:0.68rem;color:var(--muted);letter-spacing:0.05em">Hleður...</span>
+    <span class="badge-role">Security Agent Portal</span>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Yfirlit</div>
+      <div class="nav-item active" onclick="showView('dashboard')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Yfirlit
+      </div>
+      <div class="nav-item" onclick="showView('reminders')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        Áminningar & Verk
+      </div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Viðskiptavinir</div>
+    </div>
+    <div class="client-list" id="clientList">
+      <div class="loading">Hleður...</div>
+    </div>
+    <div style="padding: 0.8rem 1rem; border-top: 1px solid var(--border); margin-top: auto;">
+      <button class="btn btn-primary" style="width:100%" onclick="openModal('newClient')">
+        + Nýr viðskiptavinur
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main" id="mainContent">
+    <div class="loading">Hleður gögn...</div>
+  </main>
+</div>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modalBox">
+    <div class="modal-header">
+      <span class="modal-title" id="modalTitle">Modal</span>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer" id="modalFooter"></div>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+// ─── CONFIG ───────────────────────────────────────────────────────────────────
+const BIN_ID = '69b32d9faa77b81da9dd1ce1';
+const API_KEY = '$2a$10$xxy6g3tdmGHe0uFYYDzuZ.NHRVj3EgJnlN64O02n1jr3htw5k7nju';
+const API_BASE = 'https://api.jsonbin.io/v3/b/' + BIN_ID;
+
+const DOC_TYPES = ['Tryggingabréf','Handveð','Sjálfskuldarábyrgð','Kvöð','Umboð','Lánssamningur','Veðskuldabréf','Annað'];
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let db = { clients: [], nextId: 1 };
+let activeClientId = null;
+let activeView = 'dashboard';
+
+// ─── STORAGE ──────────────────────────────────────────────────────────────────
+// localStorage er aðal geymsla (virkar alltaf úr local skrá).
+// JSONbin.io er sync í bakgrunni þegar nettenging leyfir.
+const LS_KEY = 'glacierlaw_db';
+
+function lsSave() {
+  try { localStorage.setItem(LS_KEY, JSON.stringify(db)); } catch(e) {}
+}
+function lsLoad() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (raw) { db = JSON.parse(raw); return true; }
+  } catch(e) {}
+  return false;
+}
+
+async function jsonbinLoad() {
+  try {
+    const r = await fetch(API_BASE + '/latest', {
+      headers: { 'X-Master-Key': API_KEY, 'X-Bin-Meta': 'false' }
+    });
+    if (!r.ok) return false;
+    const j = await r.json();
+    const remote = j.record || j;
+    if (remote && remote.clients) {
+      // Nota remote ef hann er nýrri (fleiri viðskiptavinir eða hærra nextId)
+      const localNewer = db.nextId > (remote.nextId || 0);
+      if (!localNewer) { db = remote; lsSave(); }
+      return true;
+    }
+  } catch(e) {}
+  return false;
+}
+
+async function jsonbinSave() {
+  try {
+    const r = await fetch(API_BASE, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
+      body: JSON.stringify(db)
+    });
+    return r.ok;
+  } catch(e) { return false; }
+}
+
+async function loadData() {
+  // 1. Hlaða úr localStorage strax (enginn bið)
+  const hadLocal = lsLoad();
+  if (!db.clients) db.clients = [];
+  if (!db.nextId) db.nextId = 1;
+
+  renderSidebar();
+  renderView();
+
+  // 2. Reyna að sync við JSONbin í bakgrunni
+  const synced = await jsonbinLoad();
+  if (synced) {
+    renderSidebar();
+    renderView();
+    document.getElementById('syncStatus').textContent = '✓ Tengt';
+    document.getElementById('syncStatus').style.color = '#2ecc71';
+  } else {
+    document.getElementById('syncStatus').textContent = hadLocal ? '⚠ Offline – gögn úr minni' : '⚠ Offline';
+    document.getElementById('syncStatus').style.color = '#f39c12';
+  }
+}
+
+async function saveData() {
+  // 1. Vista í localStorage strax
+  lsSave();
+  toast('Vistað', 'success');
+
+  // 2. Reyna JSONbin í bakgrunni
+  const ok = await jsonbinSave();
+  if (!ok) {
+    document.getElementById('syncStatus').textContent = '⚠ Offline – vistað í minni';
+    document.getElementById('syncStatus').style.color = '#f39c12';
+  } else {
+    document.getElementById('syncStatus').textContent = '✓ Samstillt';
+    document.getElementById('syncStatus').style.color = '#2ecc71';
+  }
+}
+
+// ─── HELPERS ──────────────────────────────────────────────────────────────────
+function uid() { return db.nextId++; }
+function getClient(id) { return db.clients.find(c => c.id === id); }
+function today() { return new Date().toISOString().split('T')[0]; }
+function fmtDate(d) { if(!d) return '–'; const p = d.split('-'); return p[2]+'.'+p[1]+'.'+p[0]; }
+
+function toast(msg, type='success') {
+  const t = document.createElement('div');
+  t.className = 'toast ' + type;
+  t.textContent = msg;
+  document.getElementById('toastContainer').appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+
+function openModal(type, data) {
+  const overlay = document.getElementById('modalOverlay');
+  const body = document.getElementById('modalBody');
+  const footer = document.getElementById('modalFooter');
+  const title = document.getElementById('modalTitle');
+
+  const modals = {
+    newClient: buildNewClientModal,
+    newDoc: buildNewDocModal,
+    newReminder: buildNewReminderModal,
+    newTask: buildNewTaskModal,
+    newFee: buildNewFeeModal,
+    editDoc: buildEditDocModal,
+  };
+
+  const content = modals[type] ? modals[type](data) : { title:'', body:'', footer:'' };
+  title.textContent = content.title;
+  body.innerHTML = content.body;
+  footer.innerHTML = content.footer;
+  overlay.classList.add('open');
+  if (content.init) content.init();
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+}
+
+// ─── VIEWS ────────────────────────────────────────────────────────────────────
+function showView(view, clientId) {
+  activeView = view;
+  if (clientId !== undefined) activeClientId = clientId;
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.client-item').forEach(n => n.classList.remove('active'));
+  if (view === 'dashboard') document.querySelector('[onclick="showView(\'dashboard\')"]').classList.add('active');
+  if (view === 'reminders') document.querySelector('[onclick="showView(\'reminders\')"]').classList.add('active');
+  if (view === 'client' && clientId !== undefined) {
+    document.querySelectorAll('.client-item').forEach(n => {
+      if (parseInt(n.dataset.id) === clientId) n.classList.add('active');
+    });
+  }
+  renderView();
+}
+
+function renderView() {
+  const main = document.getElementById('mainContent');
+  if (activeView === 'dashboard') main.innerHTML = buildDashboard();
+  else if (activeView === 'reminders') main.innerHTML = buildRemindersView();
+  else if (activeView === 'client') main.innerHTML = buildClientView(activeClientId);
+}
+
+// ─── SIDEBAR ──────────────────────────────────────────────────────────────────
+function renderSidebar() {
+  const list = document.getElementById('clientList');
+  if (!db.clients.length) {
+    list.innerHTML = '<div style="font-size:0.7rem;color:var(--muted);padding:0.5rem 0.8rem;">Engir viðskiptavinir</div>';
+    return;
+  }
+  list.innerHTML = db.clients.map(c => `
+    <div class="client-item ${c.id === activeClientId && activeView==='client' ? 'active' : ''}" 
+         data-id="${c.id}" onclick="showView('client', ${c.id})">
+      <div class="client-name">${c.name}</div>
+      <div class="client-sub">${c.loanAgent || '–'}</div>
+    </div>
+  `).join('');
+}
+
+// ─── DASHBOARD ────────────────────────────────────────────────────────────────
+function buildDashboard() {
+  const now = today();
+  const allReminders = db.clients.flatMap(c => (c.reminders||[]).filter(r => !r.done).map(r => ({...r, clientName: c.name})));
+  const allTasks = db.clients.flatMap(c => (c.tasks||[]).filter(t => !t.done).map(t => ({...t, clientName: c.name})));
+  const overdue = [...allReminders, ...allTasks].filter(x => x.date < now);
+  const totalDocs = db.clients.reduce((s,c) => s + (c.documents||[]).length, 0);
+  const docsInHand = db.clients.reduce((s,c) => s + (c.documents||[]).filter(d => d.inHand).length, 0);
+
+  return `
+    <div class="page-header">
+      <div>
+        <div class="page-title">Yfirlit</div>
+        <div class="page-subtitle">Glacier Law – Security Agent kerfi</div>
+      </div>
+    </div>
+    <div class="grid-3" style="margin-bottom:1.5rem">
+      <div class="stat-box">
+        <div class="stat-label">Viðskiptavinir</div>
+        <div class="stat-value gold">${db.clients.length}</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Skjöl í höndunum</div>
+        <div class="stat-value">${docsInHand} / ${totalDocs}</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Gjaldfallnar áminningar</div>
+        <div class="stat-value" style="color:${overdue.length > 0 ? '#e74c3c' : 'var(--ice)'}">${overdue.length}</div>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Næstu áminningar</span>
+        </div>
+        <div class="card-body" style="padding:0.8rem">
+          ${allReminders.slice(0,5).map(r => `
+            <div class="task-item">
+              <div class="task-dot reminder"></div>
+              <div class="task-text">
+                <div class="task-name">${r.title}</div>
+                <div class="task-meta">${r.clientName} · ${fmtDate(r.date)}</div>
+              </div>
+            </div>
+          `).join('') || '<div class="empty-state"><div class="icon">🔔</div>Engar áminningar</div>'}
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Opin verk</span>
+        </div>
+        <div class="card-body" style="padding:0.8rem">
+          ${allTasks.slice(0,5).map(t => `
+            <div class="task-item">
+              <div class="task-dot task"></div>
+              <div class="task-text">
+                <div class="task-name">${t.title}</div>
+                <div class="task-meta">${t.clientName} · ${fmtDate(t.date)}</div>
+              </div>
+            </div>
+          `).join('') || '<div class="empty-state"><div class="icon">✓</div>Engin opin verk</div>'}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ─── REMINDERS VIEW ───────────────────────────────────────────────────────────
+function buildRemindersView() {
+  const now = today();
+  const allItems = db.clients.flatMap(c => [
+    ...(c.reminders||[]).map(r => ({...r, type:'reminder', clientName:c.name, clientId:c.id})),
+    ...(c.tasks||[]).map(t => ({...t, type:'task', clientName:t.clientName||c.name, clientId:c.id}))
+  ]).sort((a,b) => (a.date||'').localeCompare(b.date||''));
+
+  return `
+    <div class="page-header">
+      <div><div class="page-title">Áminningar & Verk</div><div class="page-subtitle">Allar áminningar og verk yfir alla viðskiptavini</div></div>
+    </div>
+    <div class="card">
+      <div class="card-body" style="padding:0.8rem">
+        ${allItems.length ? allItems.map(item => `
+          <div class="task-item" style="${item.done ? 'opacity:0.45' : ''}">
+            <div class="task-dot ${item.done ? 'done' : item.type}"></div>
+            <div class="task-text">
+              <div class="task-name">${item.done ? '<s>' : ''}${item.title}${item.done ? '</s>' : ''}</div>
+              <div class="task-meta">
+                <span class="badge ${item.type==='reminder' ? 'badge-gold' : 'badge-blue'}">${item.type==='reminder' ? 'Áminnning' : 'Verk'}</span>
+                &nbsp;${item.clientName} · ${fmtDate(item.date)}
+                ${item.date < now && !item.done ? '<span class="badge badge-red" style="margin-left:4px">Gjaldfallið</span>' : ''}
+              </div>
+            </div>
+            ${!item.done ? `<button class="btn btn-ghost btn-sm" onclick="markDone('${item.type}', ${item.clientId}, '${item.id}')">Lokið</button>` : ''}
+          </div>
+        `).join('') : '<div class="empty-state"><div class="icon">✓</div>Ekkert skráð</div>'}
+      </div>
+    </div>
+  `;
+}
+
+function markDone(type, clientId, itemId) {
+  const c = getClient(clientId);
+  const arr = type === 'reminder' ? c.reminders : c.tasks;
+  const item = arr.find(x => x.id === itemId);
+  if (item) { item.done = true; item.doneAt = today(); }
+  saveData().then(() => renderView());
+}
+
+// ─── CLIENT VIEW ──────────────────────────────────────────────────────────────
+function buildClientView(id) {
+  const c = getClient(id);
+  if (!c) return '<div class="loading">Viðskiptavinur fannst ekki</div>';
+
+  const docs = c.documents || [];
+  const reminders = c.reminders || [];
+  const tasks = c.tasks || [];
+  const fees = c.fees || [];
+
+  return `
+    <div class="page-header">
+      <div>
+        <div class="page-title">${c.name}</div>
+        <div class="page-subtitle">
+          <span class="badge badge-blue">Loan Agent: ${c.loanAgent || '–'}</span>
+          &nbsp;&nbsp;Kennitala: ${c.kennitala || '–'} · Skrád: ${fmtDate(c.created)}
+        </div>
+      </div>
+      <div style="display:flex;gap:0.5rem">
+        <button class="btn btn-ghost btn-sm" onclick="openModal('newReminder', {clientId:${id}})">+ Áminnning</button>
+        <button class="btn btn-ghost btn-sm" onclick="openModal('newTask', {clientId:${id}})">+ Verk</button>
+        <button class="btn btn-ghost btn-sm" onclick="openModal('newFee', {clientId:${id}})">+ Þóknun</button>
+        <button class="btn btn-primary btn-sm" onclick="openModal('newDoc', {clientId:${id}})">+ Skjal</button>
+      </div>
+    </div>
+
+    <!-- INFO CARDS -->
+    <div class="grid-2" style="margin-bottom:1.5rem">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Upplýsingar um lán</span><button class="btn btn-ghost btn-sm" onclick="editClientInfo(${id})">Breyta</button></div>
+        <div class="card-body">
+          <div class="fee-item"><span style="color:var(--muted);font-size:0.7rem">Lántaki</span><span>${c.name}</span></div>
+          <div class="fee-item"><span style="color:var(--muted);font-size:0.7rem">Loan Agent</span><span>${c.loanAgent || '–'}</span></div>
+          <div class="fee-item"><span style="color:var(--muted);font-size:0.7rem">Lánveitendur</span><span>${(c.lenders||[]).join(', ') || '–'}</span></div>
+          <div class="fee-item"><span style="color:var(--muted);font-size:0.7rem">Lánsupphæð</span><span>${c.loanAmount || '–'}</span></div>
+          <div class="fee-item"><span style="color:var(--muted);font-size:0.7rem">Gjaldmiðill</span><span>${c.currency || '–'}</span></div>
+          <div class="fee-item"><span style="color:var(--muted);font-size:0.7rem">Gjalddagi láns</span><span>${fmtDate(c.loanExpiry)}</span></div>
+          <div class="fee-item"><span style="color:var(--muted);font-size:0.7rem">Athugasemdir</span><span style="font-size:0.72rem;max-width:200px;text-align:right">${c.notes || '–'}</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="card-title">Þóknanir / Reikningar</span></div>
+        <div class="card-body" style="padding:0.6rem 1rem">
+          ${fees.length ? fees.map(f => `
+            <div class="fee-item">
+              <div>
+                <div style="font-size:0.78rem">${f.description}</div>
+                <div style="font-size:0.65rem;color:var(--muted)">Loan Agent: ${f.loanAgent || c.loanAgent || '–'} · ${fmtDate(f.date)}</div>
+              </div>
+              <div style="text-align:right">
+                <div class="amount">${f.amount} ${f.currency || c.currency || ''}</div>
+                <span class="badge ${f.paid ? 'badge-green' : 'badge-yellow'}">${f.paid ? 'Greitt' : 'Ógreitt'}</span>
+                ${!f.paid ? `<button class="btn btn-ghost btn-sm" style="margin-left:4px;padding:1px 6px;font-size:0.62rem" onclick="markFeePaid(${id},'${f.id}')">✓</button>` : ''}
+              </div>
+            </div>
+          `).join('') : '<div class="empty-state" style="padding:1.5rem"><div class="icon">💳</div>Engar þóknanir</div>'}
+        </div>
+      </div>
+    </div>
+
+    <!-- DOCUMENTS -->
+    <div class="section-divider">Skjöl</div>
+    <div class="card" style="margin-bottom:1.5rem">
+      ${docs.length ? `
+      <table>
+        <thead><tr>
+          <th>Skjalanúmer</th>
+          <th>Skjalategund</th>
+          <th>Þinglýsinganúmer</th>
+          <th>Í höndunum</th>
+          <th>Afhent Loan Agent</th>
+          <th>Aflýst</th>
+          <th>Athugasemdir</th>
+          <th></th>
+        </tr></thead>
+        <tbody>
+          ${docs.map(d => `
+            <tr>
+              <td><strong>${d.docNum || '–'}</strong></td>
+              <td><span class="doc-type">${d.docType}</span></td>
+              <td>${d.registrationNum || '–'}</td>
+              <td>
+                <label class="check-row">
+                  <input type="checkbox" ${d.inHand ? 'checked' : ''} onchange="toggleDocField(${id},'${d.id}','inHand',this.checked)">
+                  <span style="font-size:0.7rem;color:var(--muted)">Já</span>
+                </label>
+              </td>
+              <td>
+                <label class="check-row">
+                  <input type="checkbox" ${d.deliveredToAgent ? 'checked' : ''} onchange="toggleDocField(${id},'${d.id}','deliveredToAgent',this.checked)">
+                  <span style="font-size:0.7rem;color:var(--muted)">Já</span>
+                </label>
+              </td>
+              <td>
+                <label class="check-row">
+                  <input type="checkbox" ${d.cancelled ? 'checked' : ''} onchange="toggleDocField(${id},'${d.id}','cancelled',this.checked)" style="accent-color:#e74c3c">
+                  <span class="badge ${d.cancelled ? 'badge-red' : ''}" style="font-size:0.62rem">${d.cancelled ? 'Aflýst' : '–'}</span>
+                </label>
+              </td>
+              <td style="font-size:0.72rem;color:var(--muted);max-width:160px">${d.notes || '–'}</td>
+              <td>
+                <button class="btn btn-danger btn-sm" onclick="deleteDoc(${id},'${d.id}')">✕</button>
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>` : '<div class="empty-state"><div class="icon">📄</div>Engin skjöl skráð</div>'}
+    </div>
+
+    <!-- TASKS & REMINDERS -->
+    <div class="grid-2">
+      <div>
+        <div class="section-divider">Áminningar</div>
+        <div>
+          ${reminders.map(r => `
+            <div class="task-item" style="${r.done ? 'opacity:0.45' : ''}">
+              <div class="task-dot ${r.done ? 'done' : 'reminder'}"></div>
+              <div class="task-text">
+                <div class="task-name">${r.done ? '<s>' : ''}${r.title}${r.done ? '</s>' : ''}</div>
+                <div class="task-meta">${fmtDate(r.date)}${r.note ? ' · ' + r.note : ''}</div>
+              </div>
+              ${!r.done ? `<button class="btn btn-ghost btn-sm" onclick="markDone('reminder',${id},'${r.id}')">✓</button>` : ''}
+            </div>
+          `).join('') || '<div class="empty-state" style="padding:1.5rem"><div class="icon">🔔</div>Engar áminningar</div>'}
+        </div>
+      </div>
+      <div>
+        <div class="section-divider">Verk</div>
+        <div>
+          ${tasks.map(t => `
+            <div class="task-item" style="${t.done ? 'opacity:0.45' : ''}">
+              <div class="task-dot ${t.done ? 'done' : 'task'}"></div>
+              <div class="task-text">
+                <div class="task-name">${t.done ? '<s>' : ''}${t.title}${t.done ? '</s>' : ''}</div>
+                <div class="task-meta">${fmtDate(t.date)}${t.note ? ' · ' + t.note : ''}</div>
+              </div>
+              ${!t.done ? `<button class="btn btn-ghost btn-sm" onclick="markDone('task',${id},'${t.id}')">✓</button>` : ''}
+            </div>
+          `).join('') || '<div class="empty-state" style="padding:1.5rem"><div class="icon">✓</div>Engin verk</div>'}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ─── MODAL BUILDERS ───────────────────────────────────────────────────────────
+function buildNewClientModal() {
+  return {
+    title: 'Nýr viðskiptavinur',
+    body: `
+      <div class="grid-2">
+        <div class="form-group"><label class="form-label">Nafn lántaka *</label><input class="form-control" id="f-name" placeholder="Jökull Investment ehf."></div>
+        <div class="form-group"><label class="form-label">Kennitala</label><input class="form-control" id="f-kt" placeholder="000000-0000"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Loan Agent *</label><input class="form-control" id="f-agent" placeholder="Danske Bank"></div>
+      <div class="form-group"><label class="form-label">Lánveitendur (aðskilin með kommu)</label><input class="form-control" id="f-lenders" placeholder="DNB Bank, Danske Bank"></div>
+      <div class="grid-2">
+        <div class="form-group"><label class="form-label">Lánsupphæð</label><input class="form-control" id="f-amount" placeholder="50.000.000"></div>
+        <div class="form-group"><label class="form-label">Gjaldmiðill</label>
+          <select class="form-control" id="f-currency"><option>ISK</option><option>EUR</option><option>NOK</option><option>DKK</option><option>USD</option><option>GBP</option></select>
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">Gjalddagi láns</label><input type="date" class="form-control" id="f-expiry"></div>
+      <div class="form-group"><label class="form-label">Athugasemdir</label><textarea class="form-control" id="f-notes" rows="3" placeholder="Aðrar upplýsingar..."></textarea></div>
+    `,
+    footer: `<button class="btn btn-ghost" onclick="closeModal()">Hætta við</button><button class="btn btn-primary" onclick="saveNewClient()">Vista</button>`
+  };
+}
+
+function saveNewClient() {
+  const name = document.getElementById('f-name').value.trim();
+  const agent = document.getElementById('f-agent').value.trim();
+  if (!name) return toast('Nafn vantar', 'error');
+  const c = {
+    id: uid(), name, kennitala: document.getElementById('f-kt').value.trim(),
+    loanAgent: agent,
+    lenders: document.getElementById('f-lenders').value.split(',').map(x=>x.trim()).filter(Boolean),
+    loanAmount: document.getElementById('f-amount').value.trim(),
+    currency: document.getElementById('f-currency').value,
+    loanExpiry: document.getElementById('f-expiry').value,
+    notes: document.getElementById('f-notes').value.trim(),
+    created: today(), documents: [], reminders: [], tasks: [], fees: []
+  };
+  db.clients.push(c);
+  saveData().then(() => { renderSidebar(); showView('client', c.id); });
+  closeModal();
+}
+
+function buildNewDocModal(data) {
+  return {
+    title: 'Bæta við skjali',
+    body: `
+      <div class="grid-2">
+        <div class="form-group"><label class="form-label">Skjalanúmer *</label><input class="form-control" id="d-num" placeholder="DOC-2024-001"></div>
+        <div class="form-group"><label class="form-label">Skjalategund *</label>
+          <select class="form-control" id="d-type">${DOC_TYPES.map(t=>`<option>${t}</option>`).join('')}</select>
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">Þinglýsinganúmer</label><input class="form-control" id="d-reg" placeholder="Ef við á"></div>
+      <div style="display:flex;gap:1.5rem;margin-bottom:1rem">
+        <label class="check-row"><input type="checkbox" id="d-inhand"><span style="font-size:0.78rem">Skjal í höndunum</span></label>
+        <label class="check-row"><input type="checkbox" id="d-delivered"><span style="font-size:0.78rem">Afhent Loan Agent</span></label>
+        <label class="check-row"><input type="checkbox" id="d-cancelled" style="accent-color:#e74c3c"><span style="font-size:0.78rem">Aflýst</span></label>
+      </div>
+      <div class="form-group"><label class="form-label">Athugasemdir</label><input class="form-control" id="d-notes" placeholder="Aðrar upplýsingar..."></div>
+    `,
+    footer: `<button class="btn btn-ghost" onclick="closeModal()">Hætta við</button><button class="btn btn-primary" onclick="saveDoc(${data.clientId})">Vista</button>`
+  };
+}
+
+function saveDoc(clientId) {
+  const num = document.getElementById('d-num').value.trim();
+  if (!num) return toast('Skjalanúmer vantar', 'error');
+  const c = getClient(clientId);
+  c.documents.push({
+    id: 'D'+uid(), docNum: num,
+    docType: document.getElementById('d-type').value,
+    registrationNum: document.getElementById('d-reg').value.trim(),
+    inHand: document.getElementById('d-inhand').checked,
+    deliveredToAgent: document.getElementById('d-delivered').checked,
+    cancelled: document.getElementById('d-cancelled').checked,
+    notes: document.getElementById('d-notes').value.trim(),
+    created: today()
+  });
+  saveData().then(() => renderView());
+  closeModal();
+}
+
+function toggleDocField(clientId, docId, field, val) {
+  const c = getClient(clientId);
+  const d = c.documents.find(x => x.id === docId);
+  if (d) d[field] = val;
+  saveData();
+}
+
+function deleteDoc(clientId, docId) {
+  if (!confirm('Eyða skjali?')) return;
+  const c = getClient(clientId);
+  c.documents = c.documents.filter(d => d.id !== docId);
+  saveData().then(() => renderView());
+}
+
+function buildNewReminderModal(data) {
+  return {
+    title: 'Ný áminnning',
+    body: `
+      <div class="form-group"><label class="form-label">Titill *</label><input class="form-control" id="r-title" placeholder="Rukka Loan Agent um þóknun..."></div>
+      <div class="form-group"><label class="form-label">Dagsetning *</label><input type="date" class="form-control" id="r-date" value="${today()}"></div>
+      <div class="form-group"><label class="form-label">Athugasemdir</label><input class="form-control" id="r-note" placeholder="Frekari upplýsingar..."></div>
+    `,
+    footer: `<button class="btn btn-ghost" onclick="closeModal()">Hætta við</button><button class="btn btn-primary" onclick="saveReminder(${data.clientId})">Vista</button>`
+  };
+}
+
+function saveReminder(clientId) {
+  const title = document.getElementById('r-title').value.trim();
+  if (!title) return toast('Titill vantar', 'error');
+  const c = getClient(clientId);
+  if (!c.reminders) c.reminders = [];
+  c.reminders.push({ id: 'R'+uid(), title, date: document.getElementById('r-date').value, note: document.getElementById('r-note').value.trim(), done: false, created: today() });
+  saveData().then(() => renderView());
+  closeModal();
+}
+
+function buildNewTaskModal(data) {
+  return {
+    title: 'Nýtt verk',
+    body: `
+      <div class="form-group"><label class="form-label">Verk *</label><input class="form-control" id="t-title" placeholder="Veita upplýsingar til..."></div>
+      <div class="form-group"><label class="form-label">Dagsetning *</label><input type="date" class="form-control" id="t-date" value="${today()}"></div>
+      <div class="form-group"><label class="form-label">Athugasemdir</label><input class="form-control" id="t-note" placeholder="Frekari upplýsingar..."></div>
+    `,
+    footer: `<button class="btn btn-ghost" onclick="closeModal()">Hætta við</button><button class="btn btn-primary" onclick="saveTask(${data.clientId})">Vista</button>`
+  };
+}
+
+function saveTask(clientId) {
+  const title = document.getElementById('t-title').value.trim();
+  if (!title) return toast('Titill vantar', 'error');
+  const c = getClient(clientId);
+  if (!c.tasks) c.tasks = [];
+  c.tasks.push({ id: 'T'+uid(), title, date: document.getElementById('t-date').value, note: document.getElementById('t-note').value.trim(), done: false, created: today() });
+  saveData().then(() => renderView());
+  closeModal();
+}
+
+function buildNewFeeModal(data) {
+  const c = getClient(data.clientId);
+  return {
+    title: 'Þóknun / Reikningur',
+    body: `
+      <div class="form-group"><label class="form-label">Lýsing *</label><input class="form-control" id="fee-desc" placeholder="Árlegar þóknanir 2024"></div>
+      <div class="grid-2">
+        <div class="form-group"><label class="form-label">Upphæð *</label><input class="form-control" id="fee-amt" placeholder="150.000"></div>
+        <div class="form-group"><label class="form-label">Gjaldmiðill</label>
+          <select class="form-control" id="fee-cur"><option>ISK</option><option>EUR</option><option>NOK</option><option>DKK</option><option>USD</option></select>
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">Loan Agent (rukkaður)</label><input class="form-control" id="fee-agent" value="${c.loanAgent||''}" placeholder="Danske Bank"></div>
+      <div class="form-group"><label class="form-label">Dagsetning</label><input type="date" class="form-control" id="fee-date" value="${today()}"></div>
+      <label class="check-row" style="margin-bottom:1rem"><input type="checkbox" id="fee-paid"><span style="font-size:0.78rem">Þegar greitt</span></label>
+    `,
+    footer: `<button class="btn btn-ghost" onclick="closeModal()">Hætta við</button><button class="btn btn-primary" onclick="saveFee(${data.clientId})">Vista</button>`
+  };
+}
+
+function saveFee(clientId) {
+  const desc = document.getElementById('fee-desc').value.trim();
+  const amt = document.getElementById('fee-amt').value.trim();
+  if (!desc || !amt) return toast('Lýsing og upphæð vantar', 'error');
+  const c = getClient(clientId);
+  if (!c.fees) c.fees = [];
+  c.fees.push({
+    id: 'F'+uid(), description: desc, amount: amt,
+    currency: document.getElementById('fee-cur').value,
+    loanAgent: document.getElementById('fee-agent').value.trim(),
+    date: document.getElementById('fee-date').value,
+    paid: document.getElementById('fee-paid').checked,
+    created: today()
+  });
+  saveData().then(() => renderView());
+  closeModal();
+}
+
+function markFeePaid(clientId, feeId) {
+  const c = getClient(clientId);
+  const f = c.fees.find(x => x.id === feeId);
+  if (f) f.paid = true;
+  saveData().then(() => renderView());
+}
+
+function editClientInfo(id) {
+  const c = getClient(id);
+  document.getElementById('modalTitle').textContent = 'Breyta upplýsingum';
+  document.getElementById('modalBody').innerHTML = `
+    <div class="grid-2">
+      <div class="form-group"><label class="form-label">Nafn</label><input class="form-control" id="ei-name" value="${c.name}"></div>
+      <div class="form-group"><label class="form-label">Kennitala</label><input class="form-control" id="ei-kt" value="${c.kennitala||''}"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Loan Agent</label><input class="form-control" id="ei-agent" value="${c.loanAgent||''}"></div>
+    <div class="form-group"><label class="form-label">Lánveitendur</label><input class="form-control" id="ei-lenders" value="${(c.lenders||[]).join(', ')}"></div>
+    <div class="grid-2">
+      <div class="form-group"><label class="form-label">Lánsupphæð</label><input class="form-control" id="ei-amount" value="${c.loanAmount||''}"></div>
+      <div class="form-group"><label class="form-label">Gjaldmiðill</label>
+        <select class="form-control" id="ei-currency">
+          ${['ISK','EUR','NOK','DKK','USD','GBP'].map(x=>`<option ${c.currency===x?'selected':''}>${x}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+    <div class="form-group"><label class="form-label">Gjalddagi láns</label><input type="date" class="form-control" id="ei-expiry" value="${c.loanExpiry||''}"></div>
+    <div class="form-group"><label class="form-label">Athugasemdir</label><textarea class="form-control" id="ei-notes" rows="3">${c.notes||''}</textarea></div>
+  `;
+  document.getElementById('modalFooter').innerHTML = `
+    <button class="btn btn-ghost" onclick="closeModal()">Hætta við</button>
+    <button class="btn btn-danger btn-sm" onclick="deleteClient(${id})">Eyða viðskiptavini</button>
+    <button class="btn btn-primary" onclick="saveClientEdit(${id})">Vista</button>
+  `;
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function saveClientEdit(id) {
+  const c = getClient(id);
+  c.name = document.getElementById('ei-name').value.trim();
+  c.kennitala = document.getElementById('ei-kt').value.trim();
+  c.loanAgent = document.getElementById('ei-agent').value.trim();
+  c.lenders = document.getElementById('ei-lenders').value.split(',').map(x=>x.trim()).filter(Boolean);
+  c.loanAmount = document.getElementById('ei-amount').value.trim();
+  c.currency = document.getElementById('ei-currency').value;
+  c.loanExpiry = document.getElementById('ei-expiry').value;
+  c.notes = document.getElementById('ei-notes').value.trim();
+  saveData().then(() => { renderSidebar(); renderView(); });
+  closeModal();
+}
+
+function deleteClient(id) {
+  if (!confirm('Eyða viðskiptavini? Þetta er óafturkræft.')) return;
+  db.clients = db.clients.filter(c => c.id !== id);
+  activeClientId = null;
+  saveData().then(() => { renderSidebar(); showView('dashboard'); });
+  closeModal();
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+document.getElementById('modalOverlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('modalOverlay')) closeModal();
+});
+
+loadData();
+</script>
+</body>
+</html>
